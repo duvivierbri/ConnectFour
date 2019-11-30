@@ -1,7 +1,5 @@
 package connectfourpackage;
 
-import java.util.Scanner;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,15 +13,13 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 
 import java.awt.Image;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-
-import java.util.Scanner;
+import javax.swing.JOptionPane;
 
 public class Game extends JFrame{
 	private JPanel jpanel;
@@ -56,10 +52,8 @@ public class Game extends JFrame{
 		private JButton [][] buttons;
 		
 		public ConnectFourBoard() {
-			//GridLayout(height, width)
 			setLayout(new GridLayout(6,7) );
-			welcome();
-			//showBoard();
+			start();
 		}
 		
 		public void showBoard() { //Good :)
@@ -69,9 +63,9 @@ public class Game extends JFrame{
 			chart = new JPanel(new GridLayout(6,7));
 			choices = new JPanel(new GridLayout(1,7));
 			cpDisplay = new JPanel(new GridBagLayout());
-			player1Label = new JLabel(player1.getName());
-			player2Label = new JLabel(player2.getName());
-			cpLabel = new JLabel(currPlayer.getName());
+			player1Label = new JLabel("Player1: "+ player1.getName());
+			player2Label = new JLabel("Player2: " + player2.getName());
+			cpLabel = new JLabel("Current Player: "+ currPlayer.getName());
 			
 			names.setBackground(Color.PINK);
 			scores.setBackground(Color.YELLOW);
@@ -93,7 +87,7 @@ public class Game extends JFrame{
 			buttons = new JButton[1][7];
 			for (int col = 0; col < 7; col++) {
 				for(int row = 0; row < buttons.length; row++) {
-					buttons[row][col] = new JButton(""+ (col + 1));
+					buttons[row][col] = new JButton(""+ (col));
 					buttons[row][col].addActionListener(this);
 					choices.add(buttons[row][col]);
 				}
@@ -129,40 +123,11 @@ public class Game extends JFrame{
 			
 		}
 		
-		public void welcome() { //Still thinking whether or not I can do this
-			Scanner scnr = new Scanner(System.in);
-			System.out.println("Welcome to Connect Four! \nPlease enter Player 1");
-			player1.setName(scnr.nextLine().toUpperCase());
-			System.out.println("Please enter Player 2");
-			player2.setName(scnr.nextLine().toUpperCase());
-			System.out.println("Beginning the game of " + player1.getName() + " VS " + player2.getName());
-			showBoard(); //opens GUI
+		public void start() { //Still thinking whether or not I can do this
 			
-			
-			//SAME THING BUT IN GUI
-			/*
-			JPanel title = new JPanel(new BorderLayout());
-			title.setBackground(Color.WHITE);
-			JLabel welcome = new JLabel("Welcome! Please Type in the names of Player 1 and Player 2 :)");
-			add(title, BorderLayout.NORTH);
-			title.add(welcome, BorderLayout.CENTER);
-			
-			JPanel inputs = new JPanel(new BorderLayout());
-			inputs.setBackground(Color.ORANGE);
-			
-			JLabel p1label = new JLabel("Player 1 Name:");
-			JLabel p2label  = new JLabel("Player 2 Name:");
-			JTextField p1 = new JTextField();
-			JTextField p2 = new JTextField();
-			add(p1label);
-			add(p1);
-			add(p2label);
-			add(p2);
-			
-			JButton begin = new JButton("START");
-			begin.addActionListener(this);
-			add(begin);
-			*/
+			player1.setName(JOptionPane.showInputDialog(null, "Welcome To Connect Four!\nWho Is Player1?", "[PLAYER1]"));
+			player2.setName(JOptionPane.showInputDialog(null, "Who Is Player2?", "[PLAYER2]"));
+			showBoard();
 		}
 		
 		public void playTurn(int col) {
@@ -192,21 +157,81 @@ public class Game extends JFrame{
 			
 		}
 		
+		public void rowCheck() { //Good
+			for(int row = 0; row <= 5; row++) {
+				int p1Num = 0; //X's
+				int p2Num = 0; //O's
+				for (int col = 0; col <= 6; col++) {
+					if (board[row][col].getText().equalsIgnoreCase("X")) {
+						p1Num++;
+						p2Num = 0;
+						if (p1Num == 4) {
+							JOptionPane.showMessageDialog(null, "Player1 wins!");
+							break;
+						}
+					} else if (board[row][col].getText().equalsIgnoreCase("O")){
+						p2Num++;
+						p1Num = 0;
+						if (p2Num == 4) {
+							JOptionPane.showMessageDialog(null, "Player2 wins!");
+							break;
+						}
+					} else {
+						p1Num = 0;
+						p2Num = 0;
+					}
+				}
+				
+				
+			}
+		}
+		
+		public void columnCheck() { //GOOD :)
+			for(int col = 0; col <= 6; col++) {
+				int p1Num = 0;
+				int p2Num = 0;
+				for(int row = 0; row<=5; row++) {
+					if(board[row][col].getText().equalsIgnoreCase("X")) {
+						p1Num++;
+						p2Num=0;
+						if (p1Num == 4) {
+							JOptionPane.showMessageDialog(null,"Player1 wins!");
+							break;
+						}
+					} else if(board[row][col].getText().equalsIgnoreCase("O")) {
+						p2Num++;
+						p1Num = 0;
+						if (p2Num == 4) {
+							JOptionPane.showMessageDialog(null,"Player2 wins!");
+							break;
+						}
+					} else {
+						p2Num = 0;
+						p1Num = 0;
+					}
+				}
+			}
+		}
+		
+		public void diagonalCheck() {
+			
+		}
+		
 		@Override
 		public void actionPerformed(ActionEvent b) {
 			JButton button = (JButton)b.getSource();
-			
 			int column = Integer.parseInt(button.getText()); //get the number of the button
 			
 			if (button.getText().equalsIgnoreCase("start")) {
 				showBoard();
-			}else {
-				playTurn(column - 1);
-				takeTurn(); 
+			}else{
+				playTurn(column);
+				takeTurn();
+				rowCheck();
+				columnCheck();
 			}
-			
 		}
-			
+		
 		
 		} //END OF CONNECTFOURBOARD CLASS
 	
