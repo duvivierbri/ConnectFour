@@ -52,7 +52,7 @@ public class Game extends JFrame{
 		private JButton [][] buttons;
 		
 		public ConnectFourBoard() {
-			setLayout(new GridLayout(6,7) );
+			setLayout(new GridLayout(5,7) );
 			start();
 		}
 		
