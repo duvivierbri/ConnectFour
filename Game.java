@@ -21,20 +21,29 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Scanner;
+
 public class Game extends JFrame{
 	private JPanel jpanel;
 	private ConnectFourBoard board;
 	private Player currPlayer;
 	private Player player1;
 	private Player player2;
-	private final ImageIcon HEART = new ImageIcon("heart.png");
-	private final ImageIcon STAR = new ImageIcon("star.png");
+	private int player1score;
+	private int player2score;
+	private int roundNum;
 	
 	public Game(){
 		player1 = new Player();
 		player2 = new Player();
 		currPlayer = new Player();
 		currPlayer = player1;
+		player1score = 0;
+		player2score = 0;
+		roundNum = 0;
 		ConnectFourBoard gameboard = new ConnectFourBoard();
 		add(gameboard);
 	}
@@ -44,12 +53,16 @@ public class Game extends JFrame{
 		private JLabel player1Label;
 		private JLabel player2Label;
 		private JLabel cpLabel;
+		private JLabel p1score;
+		private JLabel p2score;
 		private JPanel names;
 		private JPanel scores;
 		private JPanel chart;
 		private JPanel choices;
 		private JPanel cpDisplay;
 		private JButton [][] buttons;
+		private FileHandler handler = new FileHandler();
+		
 		
 		public ConnectFourBoard() {
 			setLayout(new GridLayout(5,7) );
@@ -57,14 +70,20 @@ public class Game extends JFrame{
 		}
 		
 		public void showBoard() { //Good :)
+			FileInputStream fileStream = null;
+			Scanner outstream = null;
+			handler.createNewFile("Connect4-Results.txt");
+			handler.appendToFile("Connect4-Results.txt", "New game started between " + player1.getName() + " and " + player2.getName() + ".");
 			GridBagConstraints c = new GridBagConstraints();
 			names = new JPanel(new GridBagLayout());
-			scores = new JPanel(new BorderLayout());
+			scores = new JPanel(new GridBagLayout());
 			chart = new JPanel(new GridLayout(6,7));
 			choices = new JPanel(new GridLayout(1,7));
 			cpDisplay = new JPanel(new GridBagLayout());
 			player1Label = new JLabel("Player1: "+ player1.getName());
 			player2Label = new JLabel("Player2: " + player2.getName());
+			p1score = new JLabel(player1.getName() + ": " + player1score);
+			p2score = new JLabel(player2.getName() + ": " + player2score);
 			cpLabel = new JLabel("Current Player: "+ currPlayer.getName());
 			
 			names.setBackground(Color.PINK);
@@ -82,6 +101,8 @@ public class Game extends JFrame{
 			c.gridy = 5;
 			names.add(player2Label, c);
 			cpDisplay.add(cpLabel);
+			scores.add(p1score);
+			scores.add(p2score, c);
 			
 			// Placing the buttons
 			buttons = new JButton[1][7];
@@ -136,11 +157,9 @@ public class Game extends JFrame{
 					if (board[row + 1][col].getText().equalsIgnoreCase("O") || board[row + 1][col].getText().equalsIgnoreCase("X")) {
 						if (currPlayer == player1) {
 							placeMarker(row, col);
-							System.out.println("An X was placed at " + row + "," +col);
 							break;
 						} else {
 							placeMarker(row, col);
-							System.out.println("An O was placed at " + row + "," +col);
 							break;
 						}
 					}
@@ -148,10 +167,8 @@ public class Game extends JFrame{
 			} else {
 				if (currPlayer == player1) {
 					placeMarker(5, col);
-					System.out.println("An X was placed at the bottom of column " + col);
 				} else {
 					placeMarker(5, col);
-					System.out.println("An O was placed at the bottom of column " + col);
 				}
 			}
 			
@@ -167,6 +184,8 @@ public class Game extends JFrame{
 						p2Num = 0;
 						if (p1Num == 4) {
 							JOptionPane.showMessageDialog(null, "Player1 wins!");
+							player1score++;
+							clearBoard();
 							break;
 						}
 					} else if (board[row][col].getText().equalsIgnoreCase("O")){
@@ -174,6 +193,8 @@ public class Game extends JFrame{
 						p1Num = 0;
 						if (p2Num == 4) {
 							JOptionPane.showMessageDialog(null, "Player2 wins!");
+							player2score++;
+							clearBoard();
 							break;
 						}
 					} else {
@@ -196,6 +217,8 @@ public class Game extends JFrame{
 						p2Num=0;
 						if (p1Num == 4) {
 							JOptionPane.showMessageDialog(null,"Player1 wins!");
+							player1score++;
+							clearBoard();
 							break;
 						}
 					} else if(board[row][col].getText().equalsIgnoreCase("O")) {
@@ -203,6 +226,8 @@ public class Game extends JFrame{
 						p1Num = 0;
 						if (p2Num == 4) {
 							JOptionPane.showMessageDialog(null,"Player2 wins!");
+							player2score++;
+							clearBoard();
 							break;
 						}
 					} else {
@@ -213,8 +238,253 @@ public class Game extends JFrame{
 			}
 		}
 		
-		public void diagonalCheck() {
+		public void diagonalCheck1() { //FINISH LATER
+			int p1Num;
+			int p2Num;
+			int rowNum;
+			int colNum;
+			int row = 0;
+			int col = 0;
 			
+			rowNum = 3;
+			colNum = 0;
+			
+			while (rowNum <= 5) { //(From top to bottom)
+				row = rowNum;
+				col = colNum;
+				p1Num = 0;
+				p2Num = 0;
+				while (row >= 0 && col <= 6) {
+					if (board[row][col].getText().equalsIgnoreCase("X")) {
+						p1Num++;
+						
+						if (p1Num == 4) { //check if Player1 won
+							JOptionPane.showMessageDialog(null, "Player1 wins!");
+							player1score++;
+							clearBoard();
+						}
+						
+					} else if (board[row][col].getText().equalsIgnoreCase("O")){
+						p2Num++;
+						
+						if (p2Num == 4) { //check if Player2 won
+							JOptionPane.showMessageDialog(null, "Player2 wins!");
+							player2score++;
+							clearBoard();
+						}
+						
+					} else {
+						p1Num = 0;
+						p2Num = 0;
+					}
+					
+					if (row == 0 && col == 5) {
+						break;
+					}
+					
+					row--;
+					col++;
+				}
+				
+				
+				rowNum++;
+			}
+		
+		}
+		
+		public void diagonalCheck2() {
+			int p1Num;
+			int p2Num;
+			int rowNum;
+			int colNum;
+			int row = 0;
+			int col = 0;
+			
+			rowNum = 5;
+			colNum = 1;
+			
+			while (rowNum <= 5) { //(From top to bottom)
+				row = rowNum;
+				col = colNum;
+				p1Num = 0;
+				p2Num = 0;
+				
+				if (row == 5 && col == 4) { //makes sure there is no out of bounds exception
+					break;
+				}
+				
+				while (row >= 0 && col <= 6) {
+					if (board[row][col].getText().equalsIgnoreCase("X")) {
+						p1Num++;
+						
+						if (p1Num == 4) { //check if Player1 won
+							JOptionPane.showMessageDialog(null, "Player1 wins!");
+							player1score++;
+							clearBoard();
+						}
+						
+					} else if (board[row][col].getText().equalsIgnoreCase("O")){
+						p2Num++;
+						
+						if (p2Num == 4) { //check if Player2 won
+							JOptionPane.showMessageDialog(null, "Player2 wins!");
+							player2score++;
+							clearBoard();
+						}
+						
+					} else {
+						p1Num = 0;
+						p2Num = 0;
+					}
+					
+					row--;
+					col++;
+				}
+				
+				
+				colNum++;
+			}
+		}
+		
+		public void diagonalCheck3() {
+			int p1Num;
+			int p2Num;
+			int rowNum;
+			int colNum;
+			int row = 0;
+			int col = 0;
+			
+			rowNum = 0;
+			colNum = 3;
+			
+			while (rowNum <= 5) { //(From top to bottom)
+				row = rowNum;
+				col = colNum;
+				p1Num = 0;
+				p2Num = 0;
+				
+				while (row >= 0 && col <= 6) {
+					if (board[row][col].getText().equalsIgnoreCase("X")) {
+						p1Num++;
+						
+						if (p1Num == 4) { //check if Player1 won
+							JOptionPane.showMessageDialog(null, "Player1 wins!");
+							player1score++;
+							clearBoard();
+						}
+						
+					} else if (board[row][col].getText().equalsIgnoreCase("O")){
+						p2Num++;
+						
+						if (p2Num == 4) { //check if Player2 won
+							JOptionPane.showMessageDialog(null, "Player2 wins!");
+							player2score++;
+							clearBoard();
+						}
+						
+					} else {
+						p1Num = 0;
+						p2Num = 0;
+					}
+					
+					if (row == 5 && col == 5) {
+						break;
+					}
+					row++;
+					col++;
+				}
+				
+				if (colNum == 0) {
+					break;
+				}
+				colNum--;
+			}
+		}
+		
+		public void diagonalCheck4() {
+			int p1Num;
+			int p2Num;
+			int rowNum;
+			int colNum;
+			int row = 0;
+			int col = 0;
+			
+			rowNum = 1;
+			colNum = 0;
+			
+			while (rowNum <= 5) { //(From top to bottom)
+				row = rowNum;
+				col = colNum;
+				p1Num = 0;
+				p2Num = 0;
+				
+				while (row >= 0 && col <= 6) {
+					if (board[row][col].getText().equalsIgnoreCase("X")) {
+						p1Num++;
+						
+						if (p1Num == 4) { //check if Player1 won
+							JOptionPane.showMessageDialog(null, "Player1 wins!");
+							player1score++;
+							clearBoard();
+						}
+						
+					} else if (board[row][col].getText().equalsIgnoreCase("O")){
+						p2Num++;
+						
+						if (p2Num == 4) { //check if Player2 won
+							JOptionPane.showMessageDialog(null, "Player2 wins!");
+							player2score++;
+							clearBoard();
+						}
+						
+					} else {
+						p1Num = 0;
+						p2Num = 0;
+					}
+					
+					if(row == 5 && col == 4) {
+						break;
+					}
+					
+					if(row == 5 && col == 3) {
+						break;
+					}
+					row++;
+					col++;
+				}
+				
+				if (rowNum == 2) {
+					break;
+				}
+				rowNum++;
+			}
+		
+		}
+		
+		public void clearBoard() {
+			System.out.println("Round " + roundNum + " has just finished.");
+			for (int row = 0; row < board.length; row++) {
+				for(int col = 0; col <= board.length; col++) {
+					board[row][col].setText("[" + row + "]" + " [" + col + "]");
+				}
+			}
+			roundNum++;
+			updateSaveFile();
+		}
+		
+		public void updateSaveFile() {
+				if (player1score > player2score) {
+					handler.appendToFile("Connect4-Results.txt","Round " + roundNum + ": "+ player1.getName() + " is the current champion.");
+				} else if (player2score > player1score) {
+					handler.appendToFile("Connect4-Results.txt","Round " + roundNum + ": "+ player2.getName() + " is the corrent champion.");
+				} else {
+					handler.appendToFile("Connect4-Results.txt", "Round " + roundNum + ": " + "There is currently a tie between " + player1.getName() + " and " + player2.getName());
+				}
+		}
+		
+		public void updateScore() {
+			p1score.setText(player1.getName() + ": " + player1score);
+			p2score.setText(player2.getName() + ": " + player2score);
 		}
 		
 		@Override
@@ -229,6 +499,11 @@ public class Game extends JFrame{
 				takeTurn();
 				rowCheck();
 				columnCheck();
+				diagonalCheck1();
+				diagonalCheck2();
+				diagonalCheck3();
+				diagonalCheck4();
+				updateScore();
 			}
 		}
 		
