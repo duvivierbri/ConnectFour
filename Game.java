@@ -30,6 +30,8 @@ public class Game extends JFrame{
 	private JPanel jpanel;
 	private ConnectFourBoard board;
 	private Player currPlayer;
+	private Player champion;
+	private Player lastWinner;
 	private Player player1;
 	private Player player2;
 	private int player1score;
@@ -40,6 +42,9 @@ public class Game extends JFrame{
 		player1 = new Player();
 		player2 = new Player();
 		currPlayer = new Player();
+		champion = new Player();
+		lastWinner = new Player();
+//		champion = player1;
 		currPlayer = player1;
 		player1score = 0;
 		player2score = 0;
@@ -80,10 +85,10 @@ public class Game extends JFrame{
 			chart = new JPanel(new GridLayout(6,7));
 			choices = new JPanel(new GridLayout(1,7));
 			cpDisplay = new JPanel(new GridBagLayout());
-			player1Label = new JLabel("Player1: "+ player1.getName());
-			player2Label = new JLabel("Player2: " + player2.getName());
-			p1score = new JLabel(player1.getName() + ": " + player1score);
-			p2score = new JLabel(player2.getName() + ": " + player2score);
+			player1Label = new JLabel("Champion: "+ champion.getName());
+			player2Label = new JLabel("Last Winner: " + lastWinner.getName());
+			p1score = new JLabel("Player1 - " + player1.getName() + "               Score: " + player1score);
+			p2score = new JLabel("Player2 - " + player2.getName() + "               Score: " + player2score);
 			cpLabel = new JLabel("Current Player: "+ currPlayer.getName());
 			
 			names.setBackground(Color.PINK);
@@ -185,6 +190,8 @@ public class Game extends JFrame{
 						if (p1Num == 4) {
 							JOptionPane.showMessageDialog(null, "Player1 wins!");
 							player1score++;
+							lastWinner = player1;
+							player2Label.setText("Last Winner: " + lastWinner.getName());
 							clearBoard();
 							break;
 						}
@@ -194,6 +201,8 @@ public class Game extends JFrame{
 						if (p2Num == 4) {
 							JOptionPane.showMessageDialog(null, "Player2 wins!");
 							player2score++;
+							lastWinner = player2;
+							player2Label.setText("Last Winner: " + lastWinner.getName());
 							clearBoard();
 							break;
 						}
@@ -218,6 +227,8 @@ public class Game extends JFrame{
 						if (p1Num == 4) {
 							JOptionPane.showMessageDialog(null,"Player1 wins!");
 							player1score++;
+							lastWinner = player1;
+							player2Label.setText("Last Winner: " + lastWinner.getName());
 							clearBoard();
 							break;
 						}
@@ -227,6 +238,8 @@ public class Game extends JFrame{
 						if (p2Num == 4) {
 							JOptionPane.showMessageDialog(null,"Player2 wins!");
 							player2score++;
+							lastWinner = player2;
+							player2Label.setText("Last Winner: " + lastWinner.getName());
 							clearBoard();
 							break;
 						}
@@ -261,6 +274,8 @@ public class Game extends JFrame{
 						if (p1Num == 4) { //check if Player1 won
 							JOptionPane.showMessageDialog(null, "Player1 wins!");
 							player1score++;
+							lastWinner = player1;
+							player2Label.setText("Last Winner: " + lastWinner.getName());
 							clearBoard();
 						}
 						
@@ -270,6 +285,8 @@ public class Game extends JFrame{
 						if (p2Num == 4) { //check if Player2 won
 							JOptionPane.showMessageDialog(null, "Player2 wins!");
 							player2score++;
+							lastWinner = player2;
+							player2Label.setText("Last Winner: " + lastWinner.getName());
 							clearBoard();
 						}
 						
@@ -320,6 +337,8 @@ public class Game extends JFrame{
 						if (p1Num == 4) { //check if Player1 won
 							JOptionPane.showMessageDialog(null, "Player1 wins!");
 							player1score++;
+							lastWinner = player1;
+							player2Label.setText("Last Winner: " + lastWinner.getName());
 							clearBoard();
 						}
 						
@@ -329,6 +348,8 @@ public class Game extends JFrame{
 						if (p2Num == 4) { //check if Player2 won
 							JOptionPane.showMessageDialog(null, "Player2 wins!");
 							player2score++;
+							lastWinner = player2;
+							player2Label.setText("Last Winner: " + lastWinner.getName());
 							clearBoard();
 						}
 						
@@ -370,6 +391,8 @@ public class Game extends JFrame{
 						if (p1Num == 4) { //check if Player1 won
 							JOptionPane.showMessageDialog(null, "Player1 wins!");
 							player1score++;
+							lastWinner = player1;
+							player2Label.setText("Last Winner: " + lastWinner.getName());
 							clearBoard();
 						}
 						
@@ -379,6 +402,8 @@ public class Game extends JFrame{
 						if (p2Num == 4) { //check if Player2 won
 							JOptionPane.showMessageDialog(null, "Player2 wins!");
 							player2score++;
+							lastWinner = player2;
+							player2Label.setText("Last Winner: " + lastWinner.getName());
 							clearBoard();
 						}
 						
@@ -425,6 +450,8 @@ public class Game extends JFrame{
 						if (p1Num == 4) { //check if Player1 won
 							JOptionPane.showMessageDialog(null, "Player1 wins!");
 							player1score++;
+							lastWinner = player1;
+							player2Label.setText("Last Winner: " + lastWinner.getName());
 							clearBoard();
 						}
 						
@@ -434,6 +461,9 @@ public class Game extends JFrame{
 						if (p2Num == 4) { //check if Player2 won
 							JOptionPane.showMessageDialog(null, "Player2 wins!");
 							player2score++;
+							lastWinner = player2;
+							player2Label.setText("Last Winner: " + lastWinner.getName());
+							
 							clearBoard();
 						}
 						
@@ -475,16 +505,20 @@ public class Game extends JFrame{
 		public void updateSaveFile() {
 				if (player1score > player2score) {
 					handler.appendToFile("Connect4-Results.txt","Round " + roundNum + ": "+ player1.getName() + " is the current champion.");
+					champion = player1;
+					player1Label.setText("Champion "+ player1.getName());
 				} else if (player2score > player1score) {
-					handler.appendToFile("Connect4-Results.txt","Round " + roundNum + ": "+ player2.getName() + " is the corrent champion.");
+					handler.appendToFile("Connect4-Results.txt","Round " + roundNum + ": "+ player2.getName() + " is the current champion.");
+					champion = player2;
+					player1Label.setText("Champion "+ player2.getName());
 				} else {
 					handler.appendToFile("Connect4-Results.txt", "Round " + roundNum + ": " + "There is currently a tie between " + player1.getName() + " and " + player2.getName());
 				}
 		}
 		
 		public void updateScore() {
-			p1score.setText(player1.getName() + ": " + player1score);
-			p2score.setText(player2.getName() + ": " + player2score);
+			p1score.setText("Player1 - " + player1.getName() + "               Score: " + player1score);
+			p2score.setText("Player2 - " + player2.getName() + "               Score: " + player2score);
 		}
 		
 		@Override
